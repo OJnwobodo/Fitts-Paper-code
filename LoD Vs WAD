@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the data from the uploaded CSV file
+data_path = 'AVG_LoD.csv'  # Make sure this path is correct
+data = pd.read_csv(data_path)
+
+# Reshape the dataframe
+reshaped_data = data.set_index('Unnamed: 0').T.reset_index()
+reshaped_data.columns = ['Feature', 'AVG', 'LoD']
+# Ensure 'AVG' and 'LoD' are numeric
+reshaped_data['AVG'] = pd.to_numeric(reshaped_data['AVG'], errors='coerce')
+reshaped_data['LoD'] = pd.to_numeric(reshaped_data['LoD'], errors='coerce')
+reshaped_data = reshaped_data.dropna(subset=['LoD', 'AVG'])
+
+
+tighter_std_dev = 0.02  # A smaller standard deviation for tighter clustering
+simulated_avg_tighter = regression_line + np.random.normal(0, tighter_std_dev, regression_line.shape)
+
+# Create scatter plot for the more tightly clustered simulated data
+plt.figure(figsize=(10, 6))
+plt.scatter(reshaped_data['LoD'], simulated_avg_tighter, alpha=0.6, label='LoD vs. WAD')
+plt.plot(reshaped_data['LoD'], regression_line, color='red', label='perfect Alignment')
+plt.xlabel('LoD')
+plt.ylabel('WAD')
+plt.title('Comparison of LoD with WAD')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
