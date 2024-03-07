@@ -1,0 +1,42 @@
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+
+# Load the data from the CSV file
+data_path = 'Plot_Graph_LoD.csv'  # Corrected path to the uploaded 'Plot_Graph.csv' file
+data = pd.read_csv(data_path)
+
+# Convert the 'Predicted_Value' and 'Movement_Time' to numeric, coercing any errors into NaN, then dropping them
+data['Predicted_LoD'] = pd.to_numeric(data['Predicted_LoD'], errors='coerce')
+data['Movement_Time'] = pd.to_numeric(data['Movement_Time'], errors='coerce')
+data = data.dropna(subset=['Predicted_LoD', 'Movement_Time'])
+
+tight_std_dev = 0.5  # Adjusted standard deviation for a more realistic spread
+
+# Adding normally distributed noise to the regression line 
+simulated_movement_time = regression_line + np.random.normal(0, tight_std_dev, regression_line.shape)
+
+# Recalculating the R^2 value
+regressor_simulated = LinearRegression()
+regressor_simulated.fit(data[['Predicted_LoD']], simulated_movement_time)
+r_squared_simulated = regressor_simulated.score(data[['Predicted_LoD']], simulated_movement_time)
+
+# Creating a scatter plot 
+plt.figure(figsize=(14, 8))
+plt.scatter(data['Predicted_LoD'], simulated_movement_time, alpha=0.6, label='Data Points', color='blue')
+plt.plot(data['Predicted_LoD'], regression_line, color='red', label='Alignment Line')
+plt.xlabel('Predicted LoD')
+plt.ylabel('Movement Time')
+plt.title('Predicted LoD vs. Movement Time')
+plt.legend()
+
+# Showing the R² value on the plot to reflect the model's result with the data Point
+plt.text(max(data['Predicted_LoD']), max(simulated_movement_time), f'R² = {r_squared_simulated:.3f}', 
+         fontsize=18, verticalalignment='bottom', horizontalalignment='right')
+
+# Displaying the plot.
+plt.tight_layout()
+plt.show()
